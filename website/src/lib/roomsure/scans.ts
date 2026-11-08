@@ -12,6 +12,14 @@ export function roomTourPath(room: string): string {
 }
 
 /**
+ * True when a listing carries a walkable tour of its own room (a viewer address
+ * naming a room), as opposed to no scan or the generic sample scan.
+ */
+export function hasRoomTour(scanUrl: string | undefined): boolean {
+  return !!scanUrl && scanUrl.includes("/scans/room3d/") && scanUrl.includes("room=");
+}
+
+/**
  * The address to load for a room's scan. Absolute http(s) URLs are used as given;
  * same-origin paths ("/scans/...") are resolved against this site's origin.
  * Anything else, or no scan, returns undefined and the overlay shows its placeholder.
