@@ -15,7 +15,7 @@ export function WelcomeHero() {
         <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
           Tell us what you need. We rank rooms by your trade-offs, show you why, and let you walk through them before you pay.
         </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Button asChild variant="hero" size="xl" className="w-full sm:w-auto">
             <Link to="/start">
               Continue as Maya (demo)
@@ -25,6 +25,9 @@ export function WelcomeHero() {
           <CreateAccountDialog />
           <Button asChild variant="outline" size="xl" className="w-full sm:w-auto">
             <Link to="/list-your-room">List your room</Link>
+          </Button>
+          <Button asChild variant="outline" size="xl" className="w-full sm:w-auto">
+            <a href="/host/index.html">Try a 3D scan</a>
           </Button>
         </div>
         <div className="mt-10">
