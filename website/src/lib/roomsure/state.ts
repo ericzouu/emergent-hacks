@@ -3,7 +3,8 @@ import type { DeckPreferences } from "./deck";
 import { DEFAULT_DESTINATION, DEFAULT_PREFERENCES } from "./defaults";
 import type { Destination, HostReply, Reservation, Session } from "./types";
 
-export const STORAGE_KEY = "roomsure-demo-v1";
+// v2: key bumped so browsers that tested earlier builds start as a brand-new user.
+export const STORAGE_KEY = "roomsure-demo-v2";
 
 export type SwipeChoice = "interested" | "pass";
 

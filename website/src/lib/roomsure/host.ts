@@ -8,7 +8,8 @@ import { FACILITY_KEYS } from "./rankListings";
 import { SAMPLE_TOUR_PATH } from "./scans";
 import type { FairPrice, ListingDetails, RoomListing, TrustInfo } from "./types";
 
-export const HOST_STORAGE_KEY = "roomsure-host-v1";
+// v2: key bumped so browsers that tested earlier builds start as a brand-new host.
+export const HOST_STORAGE_KEY = "roomsure-host-v2";
 
 /** Neighborhoods a host can pick. Typical prices and commute minutes are synthetic demo values. */
 export const NEIGHBORHOODS: { name: string; typical: number; commute: { work: number; campus: number } }[] = [

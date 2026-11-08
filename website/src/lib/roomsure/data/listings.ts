@@ -41,7 +41,6 @@ export const LISTINGS: RoomListing[] = [
     description: "Small studio with its own kitchenette, a short walk to the office district.",
     host: { name: "Marcus", trust: verified, repliesIn: "a few hours" },
     fairPrice: { label: "Fair price", tone: "good", typical: 1060 },
-    scanUrl: SAMPLE_TOUR_PATH,
   },
   {
     id: "federal-hill-sublet",
