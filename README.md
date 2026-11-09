@@ -2,133 +2,70 @@
 
 **A room you can trust, for 1 to 6 months.**
 
-Mid-term housing is the gap between nightly rentals (too expensive) and year-long leases (too long) — where interns, travel nurses and contract workers end up in informal posts, and where scams live. Roomsure closes the trust gap: describe what you need in one sentence, get rooms ranked by **your** trade-offs with the math shown, **walk through the room in 3D before you pay**, and scam-check any listing you found elsewhere.
+A project for **Emergent Hacks**, built with my teammates [Eric Ma](https://github.com/ericmxf17), [David Hong](https://github.com/jinghihong) and [Divya Prakash](https://github.com/DivyaPrakash04).
 
-**Live demo:** <https://roomsure-hackathon.vercel.app>
+Mid-term housing — internships, travel nursing, short contracts — lives in informal posts that are hard to compare and where scams thrive. Roomsure ranks rooms by **your** trade-offs with the math shown, lets you **walk the room in 3D before you pay**, and scam-checks listings from anywhere.
 
-> On the static deploy, everything works except generating a *new* 3D scan from your own video — that needs the local scan service (see [Running it locally](#running-it-locally)). The sample videos and all pre-built tours work everywhere.
+**Live demo:** <https://roomsure-emergent.vercel.app>
 
-## Key features
+## What it does
 
-- **One-sentence intake.** Claude turns "I'm interning downtown June–August, ~$900, furnished, need a kitchen" into structured, editable preferences. If Claude is down, deterministic rules take over — the UI labels which one answered.
-- **Ranked deck with visible math.** Every card shows its score and a plain-English reason ("#1 because it covers every date and is furnished; you give up $50 on price"). Drag a slider and the deck re-ranks instantly. When nothing fits, *near misses* show the one change that brings each room back.
-- **Video → walkable 3D room.** A host films one 20–30 second phone pan. A five-agent Claude vision pipeline turns it into a parametric 3D room you walk with WASD + mouse look, with collision — about 3.5 minutes and ~$1 per room, no LiDAR, no GPU reconstruction.
-- **Roomsure Passport.** Simulated email, ID and card verification that gates matching and payments. "Prefer verified hosts" is the seeker's own setting, not a hidden thumb on the scale.
-- **Match → chat → reserve.** Simulated host reply, chat unlock, and a first-month checkout priced on the server, running on real accounts and sessions.
-- **Scam check for outside listings.** Paste a listing from anywhere; get a risk verdict with the exact suspicious phrases quoted and categorized (payment pressure, can't view, urgency, off-platform contact, price far below fair).
-- **Every AI path has a non-AI fallback**, and every trust claim stays specific: a simulated badge is not proof of safety, a 3D scan is an inspection aid, outside listings are always "not verified by Roomsure".
+- **One-sentence intake** → structured, editable preferences. Claude parses it, deterministic rules are the fallback, and the UI labels which one answered (the hosted demo runs the fallback).
+- **Ranked deck with visible math.** Every card explains its score ("#1 because it covers every date and is furnished; you give up $50 on price"). Drag a slider and the deck re-ranks; *near misses* show the one change that brings a room back.
+- **Video → walkable 3D room.** A 20–30 second phone pan becomes a first-person room (WASD, mouse look, collision) in about 3.5 minutes for ~$1 — no LiDAR, no GPU reconstruction.
+- **Roomsure Passport**: simulated email, ID and card checks that gate matching and payments.
+- **Match → chat → reserve**, priced server-side (simulated; wired for Stripe test mode).
+- **Scam check**: paste a listing from anywhere, get a risk verdict with the exact suspicious phrases quoted.
 
-## Business flow
+## Try it
 
-```
-HOST                          ROOMSURE                          SEEKER
-list a room ───────►  verify both sides (Passport)  ◄─────── describe needs in a sentence
-film a 20–30s pan ─►  video → walkable 3D scan                swipe a deck ranked by their
-                      rank by the seeker's own                own trade-offs, math shown
-                      trade-offs, explain every score         walk the room in 3D
-                      host tours, chat, checkout    ◄─────── match → chat → reserve
-                                                              (fee on the reservation)
-```
+1. [Open the demo](https://roomsure-emergent.vercel.app) → **Continue as Maya (demo)** → type what you need in one sentence (or tap a sample).
+2. Swipe the deck. Open **Show the math** and drag a weight — the ranking and reasons update live.
+3. On **Dorm single in Elmhurst**, click the **3D tour** badge: **WASD** to walk, **Shift** to run, **Esc** frees the cursor.
+4. Swipe right → simulate the host reply → chat unlocks → **Reserve**; the payment shows in the Passport.
+5. **Scam check**: paste the sample listing and watch it quote the red flags.
+6. Host side: **Try a 3D scan** on the landing page → download a sample video → upload it → walk the result. Scanning a *new* video runs locally (below).
 
-The 3D scan is the host's trust upgrade — it makes a listing *inspectable* instead of just photographed. The reservation is the monetization point (simulated today, wired for Stripe test mode). Scam check works on listings from anywhere, which makes Roomsure useful before a seeker ever books through it.
-
-## Try this scenario
-
-**As the seeker (works on the live demo):**
-
-1. Open the [live demo](https://roomsure-hackathon.vercel.app) → **Continue as Maya (demo)**. Her Passport shows simulated email, ID and card checks.
-2. Type what you need in one sentence, e.g. *"I'm interning downtown June 1 to August 15, budget around $900, furnished, with a kitchen."* Claude fills in editable preferences.
-3. Swipe the deck. Open **Show the math** on a card, drag a weight slider — the deck re-ranks and the reasons update.
-4. Find **Dorm single in Elmhurst** and open its **3D tour**: click the room to capture the mouse, **WASD** to walk, **Shift** to run, **Esc** frees the cursor.
-5. Swipe right → simulate the host reply → chat unlocks → **Reserve**. The payment shows up in the Passport.
-6. Open **Scam check** and paste the high-risk sample listing — it quotes the exact red flags ("wire the $550 deposit today", "can't show the room"…).
-
-**As the host:**
-
-7. **List your room** → at the *Scan your room from a video* step, download a sample video (kitchen or bathroom) and upload it — the matching pre-built scan attaches to your listing, and publishing puts the tour on your card. The standalone demo page [`/host/index.html`](https://roomsure-hackathon.vercel.app/host/index.html) does the same with a progress bar and a full-screen walkthrough.
-8. **Running locally with an API key:** upload *any* 20–30 s room pan instead. The scan service samples 24 frames, fans them out to five Claude analysts, and ~3.5 minutes later you walk a room that did not exist before.
-
-## Architecture
+## How a video becomes a room
 
 ```
-browser ── website/  (React + TanStack Start + Tailwind, Vite :5173)
-              │  /api proxy
-              ▼
-          platform/  (Next.js :3000)
-              ├─ real accounts & sessions, demo login/reset
-              ├─ simulated verification & payments (priced server-side)
-              ├─ ranking engine (deterministic, tested) in lib/roomsure/
-              └─ Claude routes: /api/intake, /api/check ── Claude API
-                                     └─ rule fallbacks when offline
+phone video → ~24 frames → 5 Claude vision agents in parallel
+  (architecture · furniture · materials · lighting · props)
+→ 1 merge pass → rooms/<id>.json (~10 KB parametric spec)
+→ three.js renders it: first-person walk, collision from the spec
 ```
 
-**The 3D scan pipeline** (`website/public/scans/room3d/`):
+Rooms are **specs, not meshes** — tiny, instant to load, validatable and editable, no splats or NeRFs. Pipeline, prompts and the schema live in [`website/public/scans/room3d/`](website/public/scans/room3d/).
 
-```
-phone video (one slow 20–30 s pan)
-   │   upload — /host page or the List-your-room scan step
-   ▼
-scan service  (scan-pipeline/server.mjs, local :8140)
-   │   extracts & samples ~24 frames (AVFoundation or ffmpeg)
-   ▼
-5 Claude analysts in parallel         then 1 merge pass
-   architecture & coordinates ·         reconciles everything into
-   furniture · materials/colors ·       one validated room spec
-   lighting · props/decor
-   ▼
-rooms/<id>.json — the entire room as a ~10 KB parametric spec
-   ▼
-three.js viewer — spec-driven rendering, first-person walk,
-collision from the spec's furniture footprints
-```
-
-Rooms are **specs, not meshes**: a generated room is a small JSON file (`rooms-schema.md` is the contract), so it loads instantly, renders as clean geometry, and can be validated and edited after the fact — no Gaussian splats, NeRFs or GPU reconstruction step. `?room=<id>` on the viewer URL picks the room.
+## Repo map
 
 | Folder | What it is |
 |---|---|
-| `website/` | The product UI (TanStack Start, React, Tailwind). Talks to the backend through `/api`, falls back to local data if no backend answers. |
-| `website/public/scans/room3d/` | The spec-driven 3D room engine, the room specs, and `scan-pipeline/` (generator, prompts, local scan service). |
-| `website/public/host/` | Standalone video→3D demo page with the two sample videos. |
-| `platform/` | The backend (Next.js): accounts, demo login, simulated verification & payments, Claude intake/scam-check with rule fallbacks, shared ranking logic in `lib/roomsure/`, evals. |
-| `ranking/` | Ranking engine docs, tests and an offline `demo.html`; the engine lives in `platform/lib/roomsure/`. |
+| `website/` | The app (TanStack Start, React, Tailwind). `/api` is rewritten to the backend; if none answers, local rules and data take over. |
+| `platform/` | Next.js backend: accounts, simulated verification & payments, Claude intake/scam-check, the ranking engine. |
+| `website/public/scans/room3d/` | The 3D room engine, room specs, and the scan pipeline + local scan service. |
+| `ranking/` | Ranking engine docs, tests and an offline `demo.html`. |
 
-## Running it locally
+Also: the [demo script](demo-script.md) and the [pitch deck](Roomsure%20Pitch%20Deck.pptx).
 
-Use Node 24. Backend first, then the website.
+## Run locally
 
-**1. Backend** (`platform/`, port 3000). Copy `.env.example` to `.env.local` and add `ANTHROPIC_API_KEY` for Claude; without a key the rule fallbacks run and the screens say "Read by rules (offline)".
-
-```sh
-cd platform && npm ci
-APP_URL=http://localhost:5173 npm run dev
-```
-
-`APP_URL` must be the website's address — the backend only accepts requests from that origin.
-
-**2. Website** (`website/`, port 5173). Vite proxies `/api` to port 3000.
+The hosted demo covers everything except two things that need local processes: **generating a 3D room from a new video**, and live Claude parsing. For those:
 
 ```sh
 cd website && npm install --no-package-lock && npx vite dev --port 5173
 ```
 
-Open <http://localhost:5173>. (With Bun: `bun install --frozen-lockfile && bun run dev --port 5173`.)
-
-**3. Scan service** (optional — only for generating new rooms from your own videos):
+```sh
+cd platform && npm ci && APP_URL=http://localhost:5173 npm run dev
+```
 
 ```sh
 node website/public/scans/room3d/scan-pipeline/server.mjs
 ```
 
-It reads `ANTHROPIC_API_KEY` from the environment or from `platform/.env.local`, and serves `POST /api/scan` on port 8140. The upload pages find it automatically.
+The backend (port 3000, optional) reads `ANTHROPIC_API_KEY` from `platform/.env.local`; the scan service (port 8140) reads the same key and powers new-video scans on the upload pages. Tests: `cd website && npx vitest run` and `cd platform && npm test`.
 
-**Tests:** `cd platform && npm test && npm run test:e2e` (browser tests never call the paid API), `cd website && bun run test`, and `node --test ranking/rankListings.test.ts`.
+---
 
-## Project documents
-
-- [Demo script](demo-script.md): the two-minute path, a pre-demo checklist, backups, and judge Q&A.
-- [Scan pipeline](website/public/scans/room3d/scan-pipeline/README.md) and [room spec schema](website/public/scans/room3d/rooms-schema.md): how a video becomes a walkable room.
-- [Pitch deck](Roomsure%20Pitch%20Deck.pptx): the story in slides.
-
-## Demo limitations
-
-All people, rooms, prices, verification, matching, chat and payments are synthetic or simulated — no real ID, card number or payment is ever collected. Commute times and fair-price baselines are approximate. On Vercel, accounts created during the demo can reset when the server restarts; the demo accounts are always recreated. The app does not fetch real listings, verify a real person, move money, or guarantee that any room is legitimate — and a 3D scan is an inspection aid, not proof of condition.
+*Demo honesty: all people, rooms, verification, matching, chat and payments are synthetic or simulated — no real ID, card number or payment is ever collected. A 3D scan is an inspection aid, not proof of condition.*
