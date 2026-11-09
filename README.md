@@ -39,8 +39,6 @@ Mid-term housing (internships, travel nursing, short contracts) lives in informa
 | `website/public/scans/room3d/` | The 3D room engine, room specs, and the scan pipeline + local scan service. |
 | `ranking/` | Ranking engine docs, tests and an offline `demo.html`. |
 
-Also: the [demo script](demo-script.md) and the [pitch deck](Roomsure%20Pitch%20Deck.pptx).
-
 ## Run locally
 
 Live scanning (turning a new video into a 3D room) is disabled on the public website because every scan spends real API credits. It works when you run the project locally, along with live Claude parsing:
