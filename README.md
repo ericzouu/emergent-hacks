@@ -86,13 +86,11 @@ Rooms are **specs, not meshes**: a generated room is a small JSON file (`rooms-s
 
 | Folder | What it is |
 |---|---|
-| `website/` | The product UI (TanStack Start, React, Tailwind; started in Lovable). Talks to the backend through `/api`, falls back to local data if no backend answers. |
+| `website/` | The product UI (TanStack Start, React, Tailwind). Talks to the backend through `/api`, falls back to local data if no backend answers. |
 | `website/public/scans/room3d/` | The spec-driven 3D room engine, the room specs, and `scan-pipeline/` (generator, prompts, local scan service). |
 | `website/public/host/` | Standalone video→3D demo page with the two sample videos. |
 | `platform/` | The backend (Next.js): accounts, demo login, simulated verification & payments, Claude intake/scam-check with rule fallbacks, shared ranking logic in `lib/roomsure/`, evals. |
 | `ranking/` | Ranking engine docs, tests and an offline `demo.html`; the engine lives in `platform/lib/roomsure/`. |
-| `roomwalk/` | First-generation Gaussian-splat room viewer experiment, superseded by the spec-driven engine. |
-| `lovable/` | The original Lovable export the UI started from. |
 
 ## Running it locally
 
@@ -127,11 +125,9 @@ It reads `ANTHROPIC_API_KEY` from the environment or from `platform/.env.local`,
 
 ## Project documents
 
-- [MVP requirements](Roomsure%20MVP%20Requirements%20%28for%20LLM%20build%29.md): scope, behavior, ranking fixtures, acceptance criteria.
-- [Architecture](ARCHITECTURE.md): folders, shared types, routes, Claude adapter, deployment.
 - [Demo script](demo-script.md): the two-minute path, a pre-demo checklist, backups, and judge Q&A.
 - [Scan pipeline](website/public/scans/room3d/scan-pipeline/README.md) and [room spec schema](website/public/scans/room3d/rooms-schema.md): how a video becomes a walkable room.
-- [Handoff notes](handoff.md): status and next steps for whoever picks this up.
+- [Pitch deck](Roomsure%20Pitch%20Deck.pptx): the story in slides.
 
 ## Demo limitations
 
